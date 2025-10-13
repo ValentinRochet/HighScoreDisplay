@@ -12,7 +12,9 @@ L'application est entièrement fonctionnelle sans base de données externe, util
 
 ```
 HighScoreDisplay/
-├── src/          # Code source de l'application
+├── index.html    # Page principale
+├── style.css     # Styles de l'application
+├── script.js     # Logique JavaScript
 ├── tests/        # Tests automatisés (Playwright)
 ├── docs/         # Documentation et screenshots
 └── package.json  # Dépendances pour les tests
@@ -20,12 +22,14 @@ HighScoreDisplay/
 
 ## Démarrage Rapide
 
-Ouvrez simplement `src/index.html` dans votre navigateur web. Aucune installation ni compilation nécessaire !
+Ouvrez simplement `index.html` dans votre navigateur web. Aucune installation ni compilation nécessaire !
+
+L'application est également disponible en ligne : **https://valentinrochet.github.io/HighScoreDisplay/**
 
 Ou utilisez un serveur local :
 ```bash
 python -m http.server 8000
-# Puis ouvrez http://localhost:8000/src/index.html
+# Puis ouvrez http://localhost:8000/index.html
 ```
 
 ## Fonctionnalités et Utilisation

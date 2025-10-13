@@ -7,7 +7,7 @@ const { firefox } = require('playwright');
 
   try {
     console.log('Opening page...');
-    await page.goto('file:///D:/Developpement/HighScoreDisplay/src/index.html');
+    await page.goto('file:///D:/Developpement/HighScoreDisplay/index.html');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 

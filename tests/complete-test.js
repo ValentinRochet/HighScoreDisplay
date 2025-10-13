@@ -9,7 +9,7 @@ const { firefox } = require('playwright');
     console.log('=== COMPLETE BUG FIX TEST SEQUENCE ===');
 
     console.log('1. Opening fresh page (should start with empty scores)...');
-    await page.goto('file:///D:/Developpement/HighScoreDisplay/src/index.html');
+    await page.goto('file:///D:/Developpement/HighScoreDisplay/index.html');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
