@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Test artifacts
+docs/screenshots/test-*.png
+docs/screenshots/debug-*.png
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Playwright
+.playwright-mcp/

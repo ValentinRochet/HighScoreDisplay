@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High Scores</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="arcade-machine">
+        <div class="machine-top"></div>
+
+        <div class="screen-bezel">
+            <div class="screen">
+                <div class="scanlines"></div>
+                <div class="crt-flicker"></div>
+                <div class="floating-particles"></div>
+
+                <header class="game-header">
+                    <div class="header-border">
+                        <h1 id="title" class="editable-title">HIGH SCORE</h1>
+                    </div>
+                    <div class="decorative-lines">
+                        <div class="line-left"></div>
+                        <div class="center-diamond">◆</div>
+                        <div class="line-right"></div>
+                    </div>
+                </header>
+
+                <main class="scores-display">
+                    <div class="score-headers">
+                        <div class="rank-header">RANK</div>
+                        <div class="name-header">PLAYER</div>
+                        <div class="score-header">POINTS</div>
+                    </div>
+
+                    <div class="score-list">
+                        <div class="score-item">
+                            <div class="ranking">1ST</div>
+                            <div class="player-name">---</div>
+                            <div class="score">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="ranking">2ND</div>
+                            <div class="player-name">---</div>
+                            <div class="score">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="ranking">3RD</div>
+                            <div class="player-name">---</div>
+                            <div class="score">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="ranking">4TH</div>
+                            <div class="player-name">---</div>
+                            <div class="score">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="ranking">5TH</div>
+                            <div class="player-name">---</div>
+                            <div class="score">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="ranking">6TH</div>
+                            <div class="player-name">---</div>
+                            <div class="score">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="ranking">7TH</div>
+                            <div class="player-name">---</div>
+                            <div class="score">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="ranking">8TH</div>
+                            <div class="player-name">---</div>
+                            <div class="score">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="ranking">9TH</div>
+                            <div class="player-name">---</div>
+                            <div class="score">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="ranking">10TH</div>
+                            <div class="player-name">---</div>
+                            <div class="score">0</div>
+                        </div>
+                    </div>
+                </main>
+
+                <footer class="game-footer">
+                    <div class="insert-coin">
+                        <span class="coin-text">INSERT COIN</span>
+                        <div class="coin-blink">●</div>
+                    </div>
+                    <button class="add-score-btn">PRESS START</button>
+                    <button class="view-all-scores-btn">VIEW ALL</button>
+                    <div class="credits">CREDITS: 99</div>
+                </footer>
+            </div>
+        </div>
+
+        <div class="control-panel">
+        </div>
+
+        <div class="machine-base"></div>
+    </div>
+
+    <div id="popup" class="popup hidden">
+        <div class="popup-content">
+            <h2>Ajouter un nouveau score</h2>
+            <form id="scoreForm">
+                <input type="text" id="playerName" placeholder="Nom du joueur" required autocomplete="off">
+                <input type="number" id="playerScore" placeholder="Score" required autocomplete="off">
+                <div class="popup-buttons">
+                    <button type="submit">Ajouter</button>
+                    <button type="button" id="cancelBtn">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="titlePopup" class="popup hidden">
+        <div class="popup-content">
+            <h2>Modifier le titre</h2>
+            <form id="titleForm">
+                <input type="text" id="newTitle" placeholder="Nouveau titre" required autocomplete="off">
+                <div class="popup-buttons">
+                    <button type="submit">Modifier</button>
+                    <button type="button" id="cancelTitleBtn">Annuler</button>
+                    <button type="button" id="clearScoresBtn" class="danger-btn">Supprimer tous les scores</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="confirmPopup" class="popup hidden">
+        <div class="popup-content">
+            <h2>Confirmation</h2>
+            <p>Êtes-vous sûr de vouloir supprimer tous les scores ?<br>Cette action est irréversible.</p>
+            <div class="popup-buttons">
+                <button type="button" id="confirmYes" class="danger-btn">Oui, supprimer</button>
+                <button type="button" id="confirmNo">Non, annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmDeleteScore" class="popup hidden">
+        <div class="popup-content">
+            <h2>Supprimer un score</h2>
+            <p id="deleteScoreText">Êtes-vous sûr de vouloir supprimer ce score ?</p>
+            <div class="popup-buttons">
+                <button type="button" id="confirmDeleteYes" class="danger-btn">Oui, supprimer</button>
+                <button type="button" id="confirmDeleteNo">Non, annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="allScoresPopup" class="popup hidden">
+        <div class="popup-content all-scores-popup">
+            <h2>Tous les scores</h2>
+            <div class="all-scores-container">
+                <div class="all-scores-list" id="allScoresList">
+                    <!-- Les scores seront ajoutés ici par JavaScript -->
+                </div>
+            </div>
+            <div class="popup-buttons">
+                <button type="button" id="closeAllScoresBtn">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
