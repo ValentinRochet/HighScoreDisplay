@@ -114,8 +114,14 @@
                 <input type="text" id="playerName" placeholder="Nom du joueur" required autocomplete="off">
                 <input type="number" id="playerScore" placeholder="Score" required autocomplete="off">
                 <div class="popup-buttons">
-                    <button type="submit">Ajouter</button>
-                    <button type="button" id="cancelBtn">Annuler</button>
+                    <div class="ghost-checkbox">
+                        <input type="checkbox" id="isGhost">
+                        <label for="isGhost">Fantôme</label>
+                    </div>
+                    <div class="action-buttons">
+                        <button type="submit">Ajouter</button>
+                        <button type="button" id="cancelBtn">Annuler</button>
+                    </div>
                 </div>
             </form>
         </div>

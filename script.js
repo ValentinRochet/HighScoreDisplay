@@ -83,10 +83,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const playerName = document.getElementById('playerName').value;
         const playerScore = parseInt(document.getElementById('playerScore').value);
+        const isGhost = document.getElementById('isGhost').checked;
 
         if (playerName && playerScore) {
             // Ajouter le score (qui gère à la fois la sauvegarde et l'affichage)
-            addNewScore(playerName, playerScore);
+            addNewScore(playerName, playerScore, isGhost);
             popup.classList.add('hidden');
             scoreForm.reset();
         }
@@ -170,8 +171,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function addNewScore(name, score) {
-        console.log('Ajout du nouveau score:', name, score);
+    function addNewScore(name, score, isGhost = false) {
+        console.log('Ajout du nouveau score:', name, score, 'Ghost:', isGhost);
 
         // Récupérer tous les scores sauvegardés pour avoir la liste complète
         const savedData = localStorage.getItem('highScoreData');
@@ -188,13 +189,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Filtrer les scores vides et ajouter le nouveau score
         allScores = allScores.filter(s => s.name !== '---' && s.score > 0);
-        allScores.push({ name: name, score: score });
+        allScores.push({ name: name, score: score, isGhost: isGhost });
         allScores.sort((a, b) => b.score - a.score);
 
         // Préparer les scores pour l'affichage (top 10 + remplissage)
         const displayScores = allScores.slice(0, 10);
         while (displayScores.length < 10) {
-            displayScores.push({ name: '---', score: 0 });
+            displayScores.push({ name: '---', score: 0, isGhost: false });
         }
 
         // Sauvegarder tous les scores
@@ -208,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Score sauvegardé:', dataToSave);
 
         // Trouver la position du nouveau score
-        const newScoreIndex = allScores.findIndex(s => s.name === name && s.score === score);
+        const newScoreIndex = allScores.findIndex(s => s.name === name && s.score === score && s.isGhost === isGhost);
 
         // Ne faire l'animation que si le score est dans le top 10
         if (newScoreIndex < 10) {
@@ -236,6 +237,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }, itemsToSlide.length * 150 + 800);
     }
 
+    // Calcule le rang réel d'un joueur (en ignorant les fantômes avant lui)
+    function getRealPlayerRank(scores, currentIndex) {
+        let realRank = 0;
+        for (let i = 0; i <= currentIndex; i++) {
+            if (!scores[i].isGhost) {
+                realRank++;
+            }
+        }
+        return realRank;
+    }
+
     function updateScoreDisplay(scores, newScoreIndex) {
         const scoresContainer = document.querySelector('.score-list');
         scoresContainer.innerHTML = '';
@@ -246,10 +258,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const scoreItem = document.createElement('div');
             scoreItem.className = 'score-item';
 
+            // Ajouter la classe ghost si c'est un score fantôme
+            if (scoreData.isGhost) {
+                scoreItem.classList.add('ghost-score');
+            }
+
+            // Calculer le rang réel (en ignorant les fantômes)
+            const realRank = getRealPlayerRank(scores.slice(0, 10), index);
+            const displayRank = scoreData.isGhost ? '👻' : rankingSuffixes[realRank - 1];
+
             if (index === newScoreIndex) {
                 scoreItem.classList.add('sliding-up', 'new-score');
                 scoreItem.innerHTML = `
-                    <div class="ranking">${rankingSuffixes[index]}</div>
+                    <div class="ranking">${displayRank}</div>
                     <div class="player-name typewriter-container">
                         <span class="typewriter-text" data-text="${scoreData.name}"></span>
                     </div>
@@ -259,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             } else {
                 scoreItem.innerHTML = `
-                    <div class="ranking">${rankingSuffixes[index]}</div>
+                    <div class="ranking">${displayRank}</div>
                     <div class="player-name">${scoreData.name}</div>
                     <div class="score">${scoreData.score}</div>
                 `;
@@ -417,9 +438,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         const scoreData = data.scores[i];
                         const name = scoreData ? scoreData.name : '---';
                         const score = scoreData ? scoreData.score : 0;
+                        const isGhost = scoreData ? (scoreData.isGhost || false) : false;
+
+                        // Ajouter la classe ghost si c'est un score fantôme
+                        if (isGhost) {
+                            scoreItem.classList.add('ghost-score');
+                        }
+
+                        // Calculer le rang réel (en ignorant les fantômes)
+                        const realRank = getRealPlayerRank(data.scores, i);
+                        const displayRank = isGhost ? '👻' : rankingSuffixes[realRank - 1];
 
                         scoreItem.innerHTML = `
-                            <div class="ranking">${rankingSuffixes[i]}</div>
+                            <div class="ranking">${displayRank}</div>
                             <div class="player-name">${name}</div>
                             <div class="score">${score}</div>
                         `;
@@ -550,8 +581,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const scoreItem = document.createElement('div');
             scoreItem.className = 'score-item';
 
+            // Ajouter la classe ghost si c'est un score fantôme
+            if (scoreData.isGhost) {
+                scoreItem.classList.add('ghost-score');
+            }
+
+            // Calculer le rang réel (en ignorant les fantômes)
+            const realRank = getRealPlayerRank(scores, index);
+            const displayRank = scoreData.isGhost ? '👻' : rankingSuffixes[realRank - 1];
+
             scoreItem.innerHTML = `
-                <div class="ranking">${rankingSuffixes[index]}</div>
+                <div class="ranking">${displayRank}</div>
                 <div class="player-name">${scoreData.name}</div>
                 <div class="score">${scoreData.score}</div>
             `;
@@ -601,17 +641,29 @@ document.addEventListener('DOMContentLoaded', function() {
         allScoresList.appendChild(header);
 
         // Ajouter tous les scores
+        let realRank = 0;
         allScores.forEach((score, index) => {
             const scoreItem = document.createElement('div');
             scoreItem.className = 'all-score-item';
 
-            // Ajouter une classe spéciale pour les 3 premiers
-            if (index < 3) {
-                scoreItem.classList.add(`rank-${index + 1}`);
+            // Ajouter la classe ghost si c'est un score fantôme
+            if (score.isGhost) {
+                scoreItem.classList.add('ghost-score');
+            }
+
+            // Calculer le rang réel (en ignorant les fantômes)
+            if (!score.isGhost) {
+                realRank++;
+            }
+            const displayRank = score.isGhost ? '👻' : realRank;
+
+            // Ajouter une classe spéciale pour les 3 premiers vrais joueurs
+            if (!score.isGhost && realRank <= 3) {
+                scoreItem.classList.add(`rank-${realRank}`);
             }
 
             scoreItem.innerHTML = `
-                <div class="all-score-rank">${index + 1}</div>
+                <div class="all-score-rank">${displayRank}</div>
                 <div class="all-score-name">${score.name}</div>
                 <div class="all-score-points">${score.score}</div>
             `;
