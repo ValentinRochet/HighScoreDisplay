@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmDeleteYes = document.getElementById('confirmDeleteYes');
     const confirmDeleteNo = document.getElementById('confirmDeleteNo');
     const deleteScoreText = document.getElementById('deleteScoreText');
+    const editScoreForm = document.getElementById('editScoreForm');
+    const editScoreValue = document.getElementById('editScoreValue');
 
     const viewAllScoresBtn = document.querySelector('.view-all-scores-btn');
     const allScoresPopup = document.getElementById('allScoresPopup');
@@ -119,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
     confirmDeleteNo.addEventListener('click', function() {
         confirmDeleteScore.classList.add('hidden');
         scoreToDelete = null;
+        editScoreForm.reset();
     });
 
     confirmDeleteYes.addEventListener('click', function() {
@@ -126,6 +129,20 @@ document.addEventListener('DOMContentLoaded', function() {
             deleteScoreAtIndex(scoreToDelete);
             confirmDeleteScore.classList.add('hidden');
             scoreToDelete = null;
+            editScoreForm.reset();
+        }
+    });
+
+    editScoreForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (scoreToDelete !== null) {
+            const newScore = parseInt(editScoreValue.value);
+            if (newScore && newScore > 0) {
+                updateScoreAtIndex(scoreToDelete, newScore);
+                confirmDeleteScore.classList.add('hidden');
+                scoreToDelete = null;
+                editScoreForm.reset();
+            }
         }
     });
 
@@ -133,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === confirmDeleteScore) {
             confirmDeleteScore.classList.add('hidden');
             scoreToDelete = null;
+            editScoreForm.reset();
         }
     });
 
@@ -159,13 +177,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const playerName = scoreItem.querySelector('.player-name').textContent;
                 const score = scoreItem.querySelector('.score').textContent;
 
-                // Ne pas permettre de supprimer les scores vides
+                // Ne pas permettre de modifier les scores vides
                 if (playerName === '---' && score === '0') {
                     return;
                 }
 
                 scoreToDelete = index;
-                deleteScoreText.textContent = `Êtes-vous sûr de vouloir supprimer le score de "${playerName}" (${score} points) ?`;
+                deleteScoreText.textContent = `Score de "${playerName}" (${score} points)`;
+                editScoreValue.value = score; // Préremplir avec le score actuel
                 confirmDeleteScore.classList.remove('hidden');
             });
         });
@@ -496,6 +515,63 @@ document.addEventListener('DOMContentLoaded', function() {
         setupRankingClickHandlers();
     }
 
+    function updateScoreAtIndex(index, newScore) {
+        console.log('Modification du score à l\'index:', index, 'nouveau score:', newScore);
+
+        // Récupérer les scores actuels
+        const savedData = localStorage.getItem('highScoreData');
+        let currentScores = [];
+        let allScores = [];
+
+        if (savedData) {
+            try {
+                const data = JSON.parse(savedData);
+                currentScores = data.scores || [];
+                allScores = data.allScores || data.scores || [];
+            } catch (error) {
+                currentScores = [];
+                allScores = [];
+            }
+        }
+
+        // Modifier le score correspondant dans allScores
+        if (index >= 0 && index < currentScores.length) {
+            const scoreToUpdate = currentScores[index];
+            if (scoreToUpdate.name !== '---') {
+                // Trouver et modifier le score correspondant dans allScores
+                const allScoreIndex = allScores.findIndex(s =>
+                    s.name === scoreToUpdate.name && s.score === scoreToUpdate.score
+                );
+                if (allScoreIndex !== -1) {
+                    allScores[allScoreIndex].score = newScore;
+                }
+            }
+        }
+
+        // Recalculer les scores d'affichage (top 10 de allScores)
+        allScores.sort((a, b) => b.score - a.score);
+        const displayScores = allScores.slice(0, 10);
+
+        // Compléter avec des entrées vides pour avoir 10 lignes
+        while (displayScores.length < 10) {
+            displayScores.push({ name: '---', score: 0, isGhost: false });
+        }
+
+        // Sauvegarder
+        const dataToSave = {
+            title: titleElement.textContent,
+            scores: displayScores,
+            allScores: allScores
+        };
+
+        localStorage.setItem('highScoreData', JSON.stringify(dataToSave));
+
+        // Mettre à jour l'affichage
+        updateScoreDisplayWithoutAnimation(displayScores);
+
+        console.log('Score modifié, affichage mis à jour');
+    }
+
     function deleteScoreAtIndex(index) {
         console.log('Suppression du score à l\'index:', index);
 
@@ -557,8 +633,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const scoreItem = document.createElement('div');
             scoreItem.className = 'score-item';
 
+            // Ajouter la classe ghost si c'est un score fantôme
+            if (scoreData.isGhost) {
+                scoreItem.classList.add('ghost-score');
+            }
+
+            // Calculer le rang réel (en ignorant les fantômes)
+            const realRank = getRealPlayerRank(displayScores, i);
+            const displayRank = scoreData.isGhost ? '👻' : rankingSuffixes[realRank - 1];
+
             scoreItem.innerHTML = `
-                <div class="ranking">${rankingSuffixes[i]}</div>
+                <div class="ranking">${displayRank}</div>
                 <div class="player-name">${scoreData.name}</div>
                 <div class="score">${scoreData.score}</div>
             `;

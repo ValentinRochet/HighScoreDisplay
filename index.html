@@ -154,12 +154,16 @@
 
     <div id="confirmDeleteScore" class="popup hidden">
         <div class="popup-content">
-            <h2>Supprimer un score</h2>
-            <p id="deleteScoreText">Êtes-vous sûr de vouloir supprimer ce score ?</p>
-            <div class="popup-buttons">
-                <button type="button" id="confirmDeleteYes" class="danger-btn">Oui, supprimer</button>
-                <button type="button" id="confirmDeleteNo">Non, annuler</button>
-            </div>
+            <h2>Modifier ou supprimer</h2>
+            <p id="deleteScoreText">Score de "Joueur" (0 points)</p>
+            <form id="editScoreForm">
+                <input type="number" id="editScoreValue" placeholder="Nouveau score" required autocomplete="off">
+                <div class="popup-buttons">
+                    <button type="submit">Changer le score</button>
+                    <button type="button" id="confirmDeleteYes" class="danger-btn">Supprimer le score</button>
+                    <button type="button" id="confirmDeleteNo">Annuler</button>
+                </div>
+            </form>
         </div>
     </div>
 
